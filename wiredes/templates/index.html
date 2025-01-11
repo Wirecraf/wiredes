@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descarga Videos y Música de Múltiples Plataformas</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #ecf0f1;
+            --text-color: #34495e;
+            --error-color: #e74c3c;
+            --success-color: #27ae60;
+            --hover-color: #2980b9;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--hover-color));
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+        }
+        .download-section, .features-section, .faq-section {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        .download-section:hover {
+            transform: translateY(-5px);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        input, select, button {
+            padding: 1rem;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        button:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .format-select {
+            margin-top: 1rem;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .format-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .format-option:hover {
+            background-color: #e9ecef;
+            transform: translateX(5px);
+        }
+        .format-option.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        #error, #success {
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            animation: fadeIn 0.3s ease;
+        }
+        #error {
+            background-color: var(--error-color);
+            color: white;
+        }
+        #success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        #videoInfo {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        #videoInfo img {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .features-list, .faq-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .features-list li, .faq-list li {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+        .features-list li::before {
+            content: '✓';
+            color: var(--secondary-color);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        .faq-list li h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        footer {
+            background: linear-gradient(135deg, var(--primary-color), var(--hover-color));
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--success-color);
+            color: white;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        .security-badge i {
+            font-size: 1.2rem;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Descarga Videos y Música de Múltiples Plataformas</h1>
+        <p>Herramienta educativa para descargar contenido multimedia</p>
+    </header>
+
+    <div class="container">
+        <section class="download-section">
+            <h2>Empieza a Descargar</h2>
+            <form id="downloadForm">
+                <input type="text" id="url" placeholder="Ingresa la URL del video" required>
+                <select id="format">
+                    <option value="mp4">Video (MP4)</option>
+                    <option value="mp3">Audio (MP3)</option>
+                    <option value="flac">Audio (FLAC - Alta Calidad)</option>
+                </select>
+                <button type="button" id="checkFormats" class="check-formats-btn">
+                    Verificar Formatos Disponibles
+                </button>
+                <div id="formatOptions" class="format-select" style="display: none;"></div>
+                <button type="submit" id="submitBtn">Descargar</button>
+            </form>
+            <div id="error" style="display: none;"></div>
+            <div id="success" style="display: none;"></div>
+            <div id="videoInfo"></div>
+        </section>
+
+        <section class="features-section">
+            <h2>Características Clave</h2>
+            <ul class="features-list">
+                <li>Descargas rápidas y seguras con análisis de virus integrado</li>
+                <li>Compatibilidad con múltiples plataformas (YouTube, Vimeo, SoundCloud, etc.)</li>
+                <li>Múltiples formatos de audio (MP3, FLAC) y video (MP4)</li>
+                <li>Selección de calidad automática y manual</li>
+                <li>Organización automática en carpetas dedicadas</li>
+            </ul>
+        </section>
+
+        <section class="faq-section">
+            <h2>Preguntas Frecuentes</h2>
+            <ul class="faq-list">
+                <li>
+                    <h3>¿Es legal usar esta herramienta?</h3>
+                    <p>Esta herramienta está diseñada con fines educativos. Los usuarios son responsables de cumplir con los derechos de autor y los términos de servicio de las plataformas de origen.</p>
+                </li>
+                <li>
+                    <h3>¿Qué plataformas son compatibles?</h3>
+                    <p>Nuestra herramienta es compatible con varias plataformas, incluyendo YouTube, Vimeo, SoundCloud, y más. Si encuentras una plataforma que no funciona, por favor háganoslo saber.</p>
+                </li>
+                <li>
+                    <h3>¿Dónde se guardan mis descargas?</h3>
+                    <p>Los videos se guardan en la carpeta "wiredes_vid" y la música en "wiredes_music". Estas carpetas se crean automáticamente en tu carpeta de Descargas.</p>
+                </li>
+            </ul>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2023 Multi-Platform Downloader. Todos los derechos reservados.</p>
+        <p>Aviso Legal: Esta herramienta es para uso educativo. No promovemos la infracción de derechos de autor.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script>
+        const form = document.getElementById('downloadForm');
+        const urlInput = document.getElementById('url');
+        const formatSelect = document.getElementById('format');
+        const checkFormatsBtn = document.getElementById('checkFormats');
+        const formatOptions = document.getElementById('formatOptions');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorDiv = document.getElementById('error');
+        const successDiv = document.getElementById('success');
+        const videoInfoDiv = document.getElementById('videoInfo');
+
+        let selectedFormatId = null;
+
+        checkFormatsBtn.addEventListener('click', async () => {
+            const url = urlInput.value;
+            if (!url) {
+                errorDiv.textContent = 'Por favor, ingresa una URL válida';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            checkFormatsBtn.disabled = true;
+            checkFormatsBtn.innerHTML = '<span class="loading"></span> Analizando...';
+            formatOptions.style.display = 'none';
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await axios.post('http://localhost:5000/api/formats', { url });
+                const { formats, title } = response.data;
+
+                formatOptions.innerHTML = `
+                    <h3>${title}</h3>
+                    <div class="formats-list">
+                        ${formats.map(format => `
+                            <div class="format-option" data-format-id="${format.format_id}">
+                                <span>${format.quality} (${format.ext})</span>
+                                <span>${Math.round(format.filesize / 1024 / 1024)}MB</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                formatOptions.style.display = 'block';
+                
+                document.querySelectorAll('.format-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        document.querySelectorAll('.format-option').forEach(opt => 
+                            opt.classList.remove('selected'));
+                        option.classList.add('selected');
+                        selectedFormatId = option.dataset.formatId;
+                    });
+                });
+
+                const firstOption = document.querySelector('.format-option');
+                if (firstOption) {
+                    firstOption.click();
+                }
+
+            } catch (error) {
+                errorDiv.textContent = 'Error al obtener los formatos disponibles. Por favor, verifica la URL.';
+                errorDiv.style.display = 'block';
+            } finally {
+                checkFormatsBtn.disabled = false;
+                checkFormatsBtn.textContent = 'Verificar Formatos Disponibles';
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Descargando...';
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            try {
+                const response = await axios.post('http://localhost:5000/api/download', {
+                    url: urlInput.value,
+                    format: formatSelect.value,
+                    format_id: selectedFormatId
+                }, { responseType: 'blob' });
+
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                const filename = response.headers['content-disposition']
+                    ?.split('filename=')[1]
+                    ?.replace(/"/g, '') || `download.${formatSelect.value}`;
+                link.setAttribute('download', filename);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+
+                successDiv.innerHTML = `
+                    <div class="security-badge">
+                        ✓ Archivo analizado y seguro - Sin virus detectados
+                    </div>
+                    <p>¡Descarga completada con éxito!</p>
+                `;
+                successDiv.style.display = 'block';
+            } catch (error) {
+                errorDiv.textContent = error.response?.data?.error || 'Error al descargar el archivo. Por favor, inténtalo de nuevo.';
+                errorDiv.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Descargar';
+            }
+        });
+
+        // Mejora visual para los botones
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            button.addEventListener('mouseup', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>
